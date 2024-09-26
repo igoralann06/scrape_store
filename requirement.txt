@@ -1,0 +1,3 @@
+xlwt
+beautifulsoup4
+requests
