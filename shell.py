@@ -8,6 +8,7 @@ import xlwt
 import imghdr
 import re
 import os
+import time
 
 def clean_filename(filename):
     pattern = r'[^A-Za-z0-9 ]'
@@ -17,6 +18,7 @@ def clean_filename(filename):
 while(True):
     url = input("Input the store url of Uber Eats: ")
     # Send a GET request to the URL
+    time.sleep(10)
     response = requests.get(url)
     print(response)
 
