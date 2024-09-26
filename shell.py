@@ -18,6 +18,7 @@ while(True):
     url = input("Input the store url of Uber Eats: ")
     # Send a GET request to the URL
     response = requests.get(url)
+    print(response)
 
     # Parse the HTML content of the page
     soup = BeautifulSoup(response.content, 'html.parser')
