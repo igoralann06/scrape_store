@@ -45,6 +45,17 @@ def scrape_store(url):
         store_title = json_data["queries"][0]["state"]["data"]["title"]
         cleaned_store = clean_filename(store_title)
         
+        store_rating = ""
+        store_review_number = ""
+        
+        # store_rating, store_review_number
+        try:
+            store_rating = json_data["queries"][0]["state"]["data"]["rating"]["ratingValue"]
+            store_review_number = json_data["queries"][0]["state"]["data"]["rating"]["reviewCount"]
+        except:
+            store_rating = ""
+            store_review_number = ""
+        
         dir_path = 'resources/'+cleaned_store
         if(not os.path.isdir(dir_path)):
             os.mkdir(dir_path)
@@ -122,8 +133,10 @@ def scrape_store(url):
                         price,
                         file_url,
                         image_url,
+                        store_rating,
+                        store_review_number,
                         rating,
-                        review_number
+                        review_number,
                     ]
                     print(record)
                     result.append(record)
