@@ -142,20 +142,20 @@ while(True):
                     print(record)
                     result.append(record)
         
-    workbook = xlwt.Workbook()
-    sheet = workbook.add_sheet('Sheet1')
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet('Sheet1')
 
-    for col_index, value in enumerate(titleData):
-        first_col = sheet.col(col_index)
-        first_col.width = 256 * widths[col_index]  # 20 characters wide
-        sheet.write(0, col_index, value, style)
-        
-    for row_index, row in enumerate(result):
-        for col_index, value in enumerate(row):
-            sheet.write(row_index+1, col_index, value)
+        for col_index, value in enumerate(titleData):
+            first_col = sheet.col(col_index)
+            first_col.width = 256 * widths[col_index]  # 20 characters wide
+            sheet.write(0, col_index, value, style)
+            
+        for row_index, row in enumerate(result):
+            for col_index, value in enumerate(row):
+                sheet.write(row_index+1, col_index, value)
 
-    # Save the workbook
-    workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
+        # Save the workbook
+        workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
         
     
         
