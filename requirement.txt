@@ -1,3 +1,4 @@
 xlwt
 beautifulsoup4
 requests
+streamlit

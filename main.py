@@ -14,8 +14,7 @@ def clean_filename(filename):
     cleaned_filename = re.sub(pattern, '', filename)
     return cleaned_filename
 
-while(True):
-    url = input("Enter the url of Uber Eats store: ")
+def scrape_store(url):
     # Send a GET request to the URL
     response = requests.get(url)
 
@@ -46,9 +45,10 @@ while(True):
         store_title = json_data["queries"][0]["state"]["data"]["title"]
         cleaned_store = clean_filename(store_title)
         
-        dir_path = 'download_images/'+cleaned_store
+        dir_path = 'resources/'+cleaned_store
         if(not os.path.isdir(dir_path)):
             os.mkdir(dir_path)
+            os.mkdir(dir_path+"/images")
         
         for key, menu in metaData.items():
             for catalog in menu:
@@ -84,17 +84,17 @@ while(True):
                         weData = matches[0]
                         unData = matches[1]
                     
-                    # if(image_url):
-                    #     try:
-                    #         responseImage = requests.get(image_url)
-                    #         image_type = imghdr.what(None, responseImage.content)
-                    #         if responseImage.status_code == 200:
-                    #             cleaned_url = clean_filename(item["title"])
-                    #             file_url = dir_path+"/"+cleaned_url+'.'+image_type
-                    #             with open(file_url, 'wb') as file:
-                    #                 file.write(responseImage.content)
-                    #     except:
-                    #         print("Downloading error occured")
+                    if(image_url):
+                        try:
+                            responseImage = requests.get(image_url)
+                            image_type = imghdr.what(None, responseImage.content)
+                            if responseImage.status_code == 200:
+                                cleaned_url = clean_filename(item["title"])
+                                file_url = dir_path+"/images/"+cleaned_url+'.'+image_type
+                                with open(file_url, 'wb') as file:
+                                    file.write(responseImage.content)
+                        except:
+                            print("Downloading error occured")
                     
                     ### price
                     price = item.get("priceTagline", {"text": ""})["text"]
@@ -141,7 +141,7 @@ while(True):
             sheet.write(row_index+1, col_index, value)
 
     # Save the workbook
-    workbook.save("xls/" + store_title + ".xls")
+    workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
         
     
         
