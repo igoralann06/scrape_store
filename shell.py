@@ -134,7 +134,7 @@ for url in store_urls:
                     
                     if(image_url):
                         try:
-                            responseImage = requests.get(image_url)
+                            responseImage = requests.get(image_url, headers=headers)
                             image_type = imghdr.what(None, responseImage.content)
                             if responseImage.status_code == 200:
                                 cleaned_url = clean_filename(item["title"])
