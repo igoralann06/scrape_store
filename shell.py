@@ -49,6 +49,9 @@ store_urls = [
     "https://www.ubereats.com/store/lowes-9191-sw-137th-avenue/X9c62vzyU3KVLJoNcig5zw"
 ]
 
+if(not os.path.isdir("resources")):
+    os.mkdir("resources")
+
 for url in store_urls:
     
     headers = {

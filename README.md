@@ -1,8 +1,9 @@
 ### Scraping Uber Eats stores
 
 # installation
+$ git clone https://github.com/igoralann06/scrape_store
 $ pip install -r requirement.txt
-$ python main.py
+$ python shell.py
 
 # guide
 - input Uber store url
