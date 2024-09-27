@@ -15,10 +15,42 @@ def clean_filename(filename):
     cleaned_filename = re.sub(pattern, '', filename)
     return cleaned_filename
 
-while(True):
-    url = input("Input the store url of Uber Eats: ")
-    # Send a GET request to the URL
-    time.sleep(10)
+store_urls = [
+    "https://www.ubereats.com/store/fit4u-healthy-spot/rm5TYx__UoS9jK3ezuVGyQ",
+    "https://www.ubereats.com/store/cuencos/MyP7s9Y7TNSYeZtyoyTmxA",
+    "https://www.ubereats.com/store/tropical-smoothie-13550-sw-120th-st-452/5NOKHNZzQ_uBBumSmx3EpQ",
+    "https://www.ubereats.com/store/express-subs-%26-pasta-energy-bar/dpisAiPISEaNixGnG9cQJA",
+    "https://www.ubereats.com/store/subway-14713-sw-42nd-st/_Iqb-s9vS_Cf8vzQnMF90w",
+    "https://www.ubereats.com/store/ernies-acai-laguna-st/t24lYs38VFS9-bWAnUdUrg?diningMode=PICKUP",
+    "https://www.ubereats.com/store/sweet-natura/oYGWxohZRvGNifhvb39hbQ?diningMode=PICKUP",
+    "https://www.ubereats.com/store/walgreens-16690-sw-88th-st/K_8rOU92TZOcTIl2ysBWrQ",
+    "https://www.ubereats.com/store/la-siete-cafe/od14VgtDRUytIQcMVD6KnA",
+    "https://www.ubereats.com/store/the-ice-cream-shop/bnIhrvxsSuGJBH1vGlKqVA",
+    "https://www.ubereats.com/store/joshs-premium-meats/juP_W7vhUrOx5rCuGe1a6Q",
+    "https://www.ubereats.com/store/sabores-market-kendall/C9zkPlhGUCqozREP2bnQJA",
+    "https://www.ubereats.com/store/edible-arrangements-13746-n-kendall-drive/qQ93kZxGW1q1glIo7oIJ2A",
+    "https://www.ubereats.com/store/target-kendall/rOqbSmhRVgam9bWrgbK_KA",
+    "https://www.ubereats.com/store/fresco-y-mas-14655-sw-104th-st/3wiGH6W9X56IQSHmJJrHXA",
+    "https://www.ubereats.com/store/magic-city-perks/sTeGNdVsSbSmc8xrqzO3_w",
+    "https://www.ubereats.com/store/divas-nectar-bar/9_otlnD7WoK4ivjFsUIa-A",
+    "https://www.ubereats.com/store/jamba-juice-dadeland/LDH9_2sjRZqIfI0R5FxESQ",
+    "https://www.ubereats.com/store/myroots-juice-bar-%26-kitchen-kendall/8b6G2s8dRiWRmtdjXqnLsg",
+    "https://www.ubereats.com/store/luka-restaurant-doral/idMuaIzWRNC0Ymx4nY-44w",
+    "https://www.ubereats.com/store/carne-asada/kh5dmXezXTih_5djtVkWOg",
+    "https://www.ubereats.com/store/mayas-kitchen-305/2Hn7KwdVTa636iqJ3wCuVQ",
+    "https://www.ubereats.com/store/fritanga-masayita-nica/2trPslpeTyGQNBkYg_asuQ",
+    "https://www.ubereats.com/store/el-rinconcito-latino/8yf9E4LdRXe0LMT22U3cSg",
+    "https://www.ubereats.com/store/delicias-pizzeria-cubana/sDJLDS3jQZiL81oGv4aK4w",
+    "https://www.ubereats.com/store/office-depot-officemax-8950-sw-137th-avenue/IpWOrCZxXvm3ElaNzt_b6g",
+    "https://www.ubereats.com/store/staples-13640-north-kendall-drive/Sw2pSJWiWlaRCbTVrOm-Jw",
+    "https://www.ubereats.com/store/target-kendall/rOqbSmhRVgam9bWrgbK_KA",
+    "https://www.ubereats.com/store/rinconcito-latino/KR_JgVRaQrmJgRtWj2x6jA",
+    "https://www.ubereats.com/store/sprouts-farmers-market-12690-sw-88th-street/JE1PKkKDU7SGl25SA7zdSQ",
+    "https://www.ubereats.com/store/lowes-9191-sw-137th-avenue/X9c62vzyU3KVLJoNcig5zw"
+]
+
+for url in store_urls:
+    
     response = requests.get(url)
     print(response)
 
@@ -64,7 +96,6 @@ while(True):
         if(not os.path.isdir(dir_path)):
             os.mkdir(dir_path)
             os.mkdir(dir_path+"/images")
-        
         for key, menu in metaData.items():
             for catalog in menu:
                 itemData = catalog["payload"]["standardItemsPayload"]
