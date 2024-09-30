@@ -9,6 +9,7 @@ import imghdr
 import re
 import os
 from datetime import datetime
+from urllib.parse import urlparse
 
 def clean_filename(filename):
     pattern = r'[^A-Za-z0-9 ]'
@@ -74,8 +75,8 @@ for url in store_urls:
     # Find the script tag with the specified type and id
     script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
-    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude"]
-    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50,60,60]
+    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude", "Description Detail"]
+    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50,60,60,80]
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
@@ -102,6 +103,8 @@ for url in store_urls:
             phone_number = ""
             latitude = ""
             longitude = ""
+            parsed_url = urlparse(url)
+            detail = ""
             
             # store_rating, store_review_number
             try:
@@ -152,12 +155,31 @@ for url in store_urls:
                             "itemUuid":item["uuid"],
                             "showSeeDetailsCTA":True
                         }
+                        product_page = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path + "/" + item["sectionUuid"] + "/data/" + item["uuid"]
+                        
+                        try:
+                            responseDetail = requests.get(product_page, headers=headers)
+                            if responseDetail.status_code == 200:
+                                soupDetail = BeautifulSoup(responseDetail.content, 'html.parser')
+                                detail = soupDetail.find('p', {'aria-hidden': 'true'}).get_text()
+                        except Exception as e:
+                            detail = ""
+                        
                         item_url = url + "&mod=quickView&modctx="+urllib.parse.quote(json.dumps(modctx))
                         file_url = ""
+                        description = item.get('itemDescription', "")
                         weData = ""
                         unData = ""
                         rating = ""
                         review_number = ""
+                        
+                        
+                        if(not description):
+                            try:
+                                description = item["itemThumbnailElements"][1]["payload"]["labelPayload"]["label"]["accessibilityText"]
+                            except:
+                                description = ""
+                        
                         
                         pattern = r'\((.*?)\)'
                         matches = re.findall(pattern, item["title"])
@@ -204,7 +226,7 @@ for url in store_urls:
                             item_url,
                             store_title, # title
                             itemData.get("title", {"text":""})["text"],
-                            item.get('itemDescription', ""),
+                            description,
                             item["title"],
                             weData,
                             unData,
@@ -218,7 +240,8 @@ for url in store_urls:
                             address,
                             phone_number,
                             latitude,
-                            longitude
+                            longitude,
+                            detail
                         ]
                         print(record)
                         result.append(record)
