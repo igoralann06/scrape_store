@@ -51,6 +51,8 @@ store_urls = [
 
 if(not os.path.isdir("resources")):
     os.mkdir("resources")
+if(not os.path.isdir("json")):
+    os.mkdir("json")
     
 # store_urls = []
 # for i in range(0,1):
@@ -70,8 +72,8 @@ for url in store_urls:
     # Find the script tag with the specified type and id
     script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
-    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number"]
-    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30]
+    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number"]
+    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50]
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
@@ -92,8 +94,13 @@ for url in store_urls:
             store_title = json_data["queries"][0]["state"]["data"]["title"]
             cleaned_store = clean_filename(store_title)
             
+            with open('json/'+store_title+".json", 'w', encoding='utf-8') as file:
+                json.dump(json_data, file, indent=4)
+            
             store_rating = ""
             store_review_number = ""
+            address = ""
+            phone_number = ""
             
             # store_rating, store_review_number
             try:
@@ -103,6 +110,16 @@ for url in store_urls:
                 store_rating = ""
                 store_review_number = ""
             
+            try:
+                address = json_data["queries"][0]["state"]["data"]["location"]["address"]
+            except:
+                address = ""
+                
+            try:
+                phone_number = json_data["queries"][0]["state"]["data"]["phoneNumber"];
+            except:
+                phone_number = ""
+                
             dir_path = 'resources/'+cleaned_store
             if(not os.path.isdir(dir_path)):
                 os.mkdir(dir_path)
@@ -183,6 +200,8 @@ for url in store_urls:
                             store_review_number,
                             rating,
                             review_number,
+                            address,
+                            phone_number
                         ]
                         print(record)
                         result.append(record)
