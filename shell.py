@@ -50,8 +50,8 @@ for url in store_urls:
     # Find the script tag with the specified type and id
     script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
-    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude", "Description Detail", "Seq_id"]
-    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50,60,60,80,30]
+    titleData = ["id","Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude", "Description Detail"]
+    widths = [30,150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50,60,60,80]
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
@@ -199,6 +199,7 @@ for url in store_urls:
                             review_number = ""
                         
                         record = [
+                            str(section_id),
                             url,
                             product_page,
                             store_title, # title
@@ -219,7 +220,6 @@ for url in store_urls:
                             latitude,
                             longitude,
                             detail,
-                            str(section_id)
                         ]
                         print(record)
                         result.append(record)
