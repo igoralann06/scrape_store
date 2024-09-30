@@ -75,7 +75,7 @@ for url in store_urls:
     script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
     titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude"]
-    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50]
+    widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50,60,60]
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
@@ -238,7 +238,7 @@ for url in store_urls:
             # Save the workbook
             workbook.save('resources/'+current_time+"/"+cleaned_store+ "/" + store_title + ".xls")
         except Exception as error:
-            print("Fetching error occured", error)
+            print(error)
         
     
         
