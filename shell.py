@@ -8,7 +8,7 @@ import xlwt
 import imghdr
 import re
 import os
-import time
+from datetime import datetime
 
 def clean_filename(filename):
     pattern = r'[^A-Za-z0-9 ]'
@@ -51,13 +51,15 @@ store_urls = [
 
 if(not os.path.isdir("resources")):
     os.mkdir("resources")
-if(not os.path.isdir("json")):
-    os.mkdir("json")
     
 # store_urls = []
 # for i in range(0,1):
 #     new_url = input("Enter the new url of Uber Eats Store: ")
 #     store_urls.append(new_url)
+
+now = datetime.now()
+current_time = now.strftime("%m-%d-%Y-%H-%M-%S")
+os.mkdir("resources/"+current_time)
 
 for url in store_urls:
     
@@ -72,7 +74,7 @@ for url in store_urls:
     # Find the script tag with the specified type and id
     script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
-    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number"]
+    titleData = ["Store page link", "Product item page link", "Store_name", "Category", "Product_description", "Product Name", "Weight/Quantity", "Units/Counts", "Price", "image_file_names", "Image_Link", "Store Rating", "Store Review number", "Product Rating", "Product Review number", "Address", "Phone number", "Latitude", "Longitude"]
     widths = [150,150,60,45,70,35,25,25,20,130,130,30,30,30,30,60,50]
     result = []
 
@@ -94,13 +96,12 @@ for url in store_urls:
             store_title = json_data["queries"][0]["state"]["data"]["title"]
             cleaned_store = clean_filename(store_title)
             
-            with open('json/'+store_title+".json", 'w', encoding='utf-8') as file:
-                json.dump(json_data, file, indent=4)
-            
             store_rating = ""
             store_review_number = ""
             address = ""
             phone_number = ""
+            latitude = ""
+            longitude = ""
             
             # store_rating, store_review_number
             try:
@@ -116,14 +117,28 @@ for url in store_urls:
                 address = ""
                 
             try:
-                phone_number = json_data["queries"][0]["state"]["data"]["phoneNumber"];
+                phone_number = json_data["queries"][0]["state"]["data"]["phoneNumber"]
             except:
                 phone_number = ""
                 
-            dir_path = 'resources/'+cleaned_store
+            try:
+                latitude = json_data["queries"][0]["state"]["data"]["location"]["latitude"]
+            except:
+                latitude = ""
+                
+            try:
+                longitude = json_data["queries"][0]["state"]["data"]["location"]["longitude"]
+            except:
+                longitude = ""
+                
+            dir_path = 'resources/'+current_time+"/"+cleaned_store
             if(not os.path.isdir(dir_path)):
                 os.mkdir(dir_path)
                 os.mkdir(dir_path+"/images")
+                
+            with open('resources/'+current_time+"/"+cleaned_store+"/"+store_title+".json", 'w', encoding='utf-8') as file:
+                json.dump(json_data, file, indent=4)
+            
             for key, menu in metaData.items():
                 for catalog in menu:
                     itemData = catalog["payload"]["standardItemsPayload"]
@@ -201,7 +216,9 @@ for url in store_urls:
                             rating,
                             review_number,
                             address,
-                            phone_number
+                            phone_number,
+                            latitude,
+                            longitude
                         ]
                         print(record)
                         result.append(record)
@@ -219,9 +236,9 @@ for url in store_urls:
                     sheet.write(row_index+1, col_index, value)
 
             # Save the workbook
-            workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
-        except:
-            print("Fetching error occured")
+            workbook.save('resources/'+current_time+"/"+cleaned_store+ "/" + store_title + ".xls")
+        except Exception as error:
+            print("Fetching error occured", error)
         
     
         
