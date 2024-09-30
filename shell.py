@@ -223,7 +223,7 @@ for url in store_urls:
                         
                         record = [
                             url,
-                            item_url,
+                            product_page,
                             store_title, # title
                             itemData.get("title", {"text":""})["text"],
                             description,
