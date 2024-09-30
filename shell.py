@@ -10,7 +10,6 @@ import re
 import os
 from datetime import datetime
 from urllib.parse import urlparse
-import uuid
 
 def clean_filename(filename):
     pattern = r'[^A-Za-z0-9 ]'
@@ -117,6 +116,8 @@ for url in store_urls:
                 
             with open('resources/'+current_time+"/"+cleaned_store+"/"+store_title+".json", 'w', encoding='utf-8') as file:
                 json.dump(json_data, file, indent=4)
+                
+            section_id = 1
             
             for key, menu in metaData.items():
                 for catalog in menu:
@@ -124,7 +125,6 @@ for url in store_urls:
                     
                     for item in itemData["catalogItems"]:
                         image_url = item.get('imageUrl', "")
-                        new_uuid = uuid.uuid4()
                         modctx = {
                             "storeUuid":json_data["queries"][0]["state"]["data"]["uuid"],
                             "sectionUuid":item["sectionUuid"],
@@ -178,7 +178,7 @@ for url in store_urls:
                                 image_type = imghdr.what(None, responseImage.content)
                                 if responseImage.status_code == 200:
                                     cleaned_url = clean_filename(item["title"])
-                                    file_url = dir_path+"/images/"+str(new_uuid)+'.'+image_type
+                                    file_url = dir_path+"/images/"+str(section_id)+'.'+image_type
                                     with open(file_url, 'wb') as file:
                                         file.write(responseImage.content)
                             except Exception as e:
@@ -222,6 +222,7 @@ for url in store_urls:
                         ]
                         print(record)
                         result.append(record)
+                        section_id = section_id + 1
             
             workbook = xlwt.Workbook()
             sheet = workbook.add_sheet('Sheet1')
