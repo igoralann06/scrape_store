@@ -2,6 +2,9 @@
 
 # installation
 $ git clone https://github.com/igoralann06/scrape_store
+$ cd scrape_store
+$ python3 -m venv venv
+$ source venv/bin/activate
 $ pip install -r requirement.txt
 $ python shell.py
 

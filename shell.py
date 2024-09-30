@@ -51,6 +51,11 @@ store_urls = [
 
 if(not os.path.isdir("resources")):
     os.mkdir("resources")
+    
+# store_urls = []
+# for i in range(0,1):
+#     new_url = input("Enter the new url of Uber Eats Store: ")
+#     store_urls.append(new_url)
 
 for url in store_urls:
     
@@ -72,129 +77,132 @@ for url in store_urls:
     style = xlwt.easyxf('font: bold 1; align: horiz center')
 
     if script_tag:
-        script_content = script_tag.string
-        decoded_content = urllib.parse.unquote(script_content)
-        json_string = decoded_content.replace('\\u0022', '"').replace('\\u005C', '\\').replace('\\u2019', "'")
-        
-        # Load the JSON string into a Python dictionary
-        json_data = json.loads(json_string)
-        
-        with open('data.json', 'w', encoding='utf-8') as file:
-            json.dump(json_data, file, indent=4)
-        
-        metaData = json_data["queries"][0]["state"]["data"]["catalogSectionsMap"]
-        store_title = json_data["queries"][0]["state"]["data"]["title"]
-        cleaned_store = clean_filename(store_title)
-        
-        store_rating = ""
-        store_review_number = ""
-        
-        # store_rating, store_review_number
         try:
-            store_rating = json_data["queries"][0]["state"]["data"]["rating"]["ratingValue"]
-            store_review_number = json_data["queries"][0]["state"]["data"]["rating"]["reviewCount"]
-        except:
+            script_content = script_tag.string
+            decoded_content = urllib.parse.unquote(script_content)
+            json_string = decoded_content.replace('\\u0022', '"').replace('\\u005C', '\\').replace('\\u2019', "'")
+            
+            # Load the JSON string into a Python dictionary
+            json_data = json.loads(json_string)
+            
+            with open('data.json', 'w', encoding='utf-8') as file:
+                json.dump(json_data, file, indent=4)
+            
+            metaData = json_data["queries"][0]["state"]["data"]["catalogSectionsMap"]
+            store_title = json_data["queries"][0]["state"]["data"]["title"]
+            cleaned_store = clean_filename(store_title)
+            
             store_rating = ""
             store_review_number = ""
-        
-        dir_path = 'resources/'+cleaned_store
-        if(not os.path.isdir(dir_path)):
-            os.mkdir(dir_path)
-            os.mkdir(dir_path+"/images")
-        for key, menu in metaData.items():
-            for catalog in menu:
-                itemData = catalog["payload"]["standardItemsPayload"]
-                
-                for item in itemData["catalogItems"]:
-                    image_url = item.get('imageUrl', "")
-                    modctx = {
-                        "storeUuid":json_data["queries"][0]["state"]["data"]["uuid"],
-                        "sectionUuid":item["sectionUuid"],
-                        "subsectionUuid":item["subsectionUuid"],
-                        "itemUuid":item["uuid"],
-                        "showSeeDetailsCTA":True
-                    }
-                    item_url = url + "&mod=quickView&modctx="+urllib.parse.quote(json.dumps(modctx))
-                    file_url = ""
-                    weData = ""
-                    unData = ""
-                    rating = ""
-                    review_number = ""
+            
+            # store_rating, store_review_number
+            try:
+                store_rating = json_data["queries"][0]["state"]["data"]["rating"]["ratingValue"]
+                store_review_number = json_data["queries"][0]["state"]["data"]["rating"]["reviewCount"]
+            except:
+                store_rating = ""
+                store_review_number = ""
+            
+            dir_path = 'resources/'+cleaned_store
+            if(not os.path.isdir(dir_path)):
+                os.mkdir(dir_path)
+                os.mkdir(dir_path+"/images")
+            for key, menu in metaData.items():
+                for catalog in menu:
+                    itemData = catalog["payload"]["standardItemsPayload"]
                     
-                    pattern = r'\((.*?)\)'
-                    matches = re.findall(pattern, item["title"])
-                    if(len(matches) == 1):
-                        lowered_str = matches[0].lower()
-                        if(lowered_str.find("per") == -1 and lowered_str.find("each") == -1):
-                            weData = matches[0]
-                            unData = ""
-                        else:
-                            weData = ""
-                            unData = matches[0]
-                    elif(len(matches) == 2):
-                        weData = matches[0]
-                        unData = matches[1]
-                    
-                    if(image_url):
-                        try:
-                            responseImage = requests.get(image_url, headers=headers)
-                            image_type = imghdr.what(None, responseImage.content)
-                            if responseImage.status_code == 200:
-                                cleaned_url = clean_filename(item["title"])
-                                file_url = dir_path+"/images/"+cleaned_url+'.'+image_type
-                                with open(file_url, 'wb') as file:
-                                    file.write(responseImage.content)
-                        except:
-                            print("Downloading error occured")
-                    
-                    ### price
-                    price = item.get("priceTagline", {"text": ""})["text"]
-                    if(not price):
-                        price_value = float(item.get("price"))/100.0
-                        price = '$'+ str(price_value)
-                    
-                    # rating, review_number
-                    try:
-                        rating = item["catalogItemAnalyticsData"]["endorsementMetadata"]["rating"]
-                        review_number = item["catalogItemAnalyticsData"]["endorsementMetadata"]["numRatings"]
-                    except:
+                    for item in itemData["catalogItems"]:
+                        image_url = item.get('imageUrl', "")
+                        modctx = {
+                            "storeUuid":json_data["queries"][0]["state"]["data"]["uuid"],
+                            "sectionUuid":item["sectionUuid"],
+                            "subsectionUuid":item["subsectionUuid"],
+                            "itemUuid":item["uuid"],
+                            "showSeeDetailsCTA":True
+                        }
+                        item_url = url + "&mod=quickView&modctx="+urllib.parse.quote(json.dumps(modctx))
+                        file_url = ""
+                        weData = ""
+                        unData = ""
                         rating = ""
                         review_number = ""
-                    
-                    record = [
-                        url,
-                        item_url,
-                        store_title, # title
-                        itemData.get("title", {"text":""})["text"],
-                        item.get('itemDescription', ""),
-                        item["title"],
-                        weData,
-                        unData,
-                        price,
-                        file_url,
-                        image_url,
-                        store_rating,
-                        store_review_number,
-                        rating,
-                        review_number,
-                    ]
-                    print(record)
-                    result.append(record)
-        
-        workbook = xlwt.Workbook()
-        sheet = workbook.add_sheet('Sheet1')
-
-        for col_index, value in enumerate(titleData):
-            first_col = sheet.col(col_index)
-            first_col.width = 256 * widths[col_index]  # 20 characters wide
-            sheet.write(0, col_index, value, style)
+                        
+                        pattern = r'\((.*?)\)'
+                        matches = re.findall(pattern, item["title"])
+                        if(len(matches) == 1):
+                            lowered_str = matches[0].lower()
+                            if(lowered_str.find("per") == -1 and lowered_str.find("each") == -1):
+                                weData = matches[0]
+                                unData = ""
+                            else:
+                                weData = ""
+                                unData = matches[0]
+                        elif(len(matches) == 2):
+                            weData = matches[0]
+                            unData = matches[1]
+                        
+                        if(image_url):
+                            try:
+                                responseImage = requests.get(image_url, headers=headers)
+                                image_type = imghdr.what(None, responseImage.content)
+                                if responseImage.status_code == 200:
+                                    cleaned_url = clean_filename(item["title"])
+                                    file_url = dir_path+"/images/"+cleaned_url+'.'+image_type
+                                    with open(file_url, 'wb') as file:
+                                        file.write(responseImage.content)
+                            except:
+                                print("Downloading error occured")
+                        
+                        ### price
+                        price = item.get("priceTagline", {"text": ""})["text"]
+                        if(not price):
+                            price_value = float(item.get("price"))/100.0
+                            price = '$'+ str(price_value)
+                        
+                        # rating, review_number
+                        try:
+                            rating = item["catalogItemAnalyticsData"]["endorsementMetadata"]["rating"]
+                            review_number = item["catalogItemAnalyticsData"]["endorsementMetadata"]["numRatings"]
+                        except:
+                            rating = ""
+                            review_number = ""
+                        
+                        record = [
+                            url,
+                            item_url,
+                            store_title, # title
+                            itemData.get("title", {"text":""})["text"],
+                            item.get('itemDescription', ""),
+                            item["title"],
+                            weData,
+                            unData,
+                            price,
+                            file_url,
+                            image_url,
+                            store_rating,
+                            store_review_number,
+                            rating,
+                            review_number,
+                        ]
+                        print(record)
+                        result.append(record)
             
-        for row_index, row in enumerate(result):
-            for col_index, value in enumerate(row):
-                sheet.write(row_index+1, col_index, value)
+            workbook = xlwt.Workbook()
+            sheet = workbook.add_sheet('Sheet1')
 
-        # Save the workbook
-        workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
+            for col_index, value in enumerate(titleData):
+                first_col = sheet.col(col_index)
+                first_col.width = 256 * widths[col_index]  # 20 characters wide
+                sheet.write(0, col_index, value, style)
+                
+            for row_index, row in enumerate(result):
+                for col_index, value in enumerate(row):
+                    sheet.write(row_index+1, col_index, value)
+
+            # Save the workbook
+            workbook.save('resources/'+cleaned_store+ "/" + store_title + ".xls")
+        except:
+            print("Fetching error occured")
         
     
         
