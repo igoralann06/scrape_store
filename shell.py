@@ -35,6 +35,7 @@ if(not os.path.isdir("resources")):
 
 now = datetime.now()
 current_time = now.strftime("%m-%d-%Y-%H-%M-%S")
+prefix = now.strftime("%Y%m%d%H%M%S_")
 os.mkdir("resources/"+current_time)
 
 for url in store_urls:
@@ -178,7 +179,7 @@ for url in store_urls:
                                 image_type = imghdr.what(None, responseImage.content)
                                 if responseImage.status_code == 200:
                                     cleaned_url = clean_filename(item["title"])
-                                    file_url = dir_path+"/images/"+str(section_id)+'.'+image_type
+                                    file_url = dir_path+"/images/"+prefix+str(section_id)+'.'+image_type
                                     with open(file_url, 'wb') as file:
                                         file.write(responseImage.content)
                             except Exception as e:
