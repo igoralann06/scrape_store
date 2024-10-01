@@ -56,9 +56,8 @@ for url in store_urls:
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
-
-    if script_tag:
-        try:
+    try:
+        if script_tag:
             script_content = script_tag.string
             decoded_content = urllib.parse.unquote(script_content)
             json_string = decoded_content.replace('\\u0022', '"').replace('\\u005C', '\\').replace('\\u2019', "'")
@@ -240,8 +239,8 @@ for url in store_urls:
 
             # Save the workbook
             workbook.save('resources/'+current_time+"/"+cleaned_store+ "/" + store_title + ".xls")
-        except Exception as error:
-            print(error)
+    except Exception as error:
+        print(error)        
         
     
         
