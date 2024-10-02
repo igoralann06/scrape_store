@@ -35,8 +35,10 @@ if(not os.path.isdir("resources")):
 
 now = datetime.now()
 current_time = now.strftime("%m-%d-%Y-%H-%M-%S")
-prefix = now.strftime("%Y%m%d%H%M%S_")
+prefix = now.strftime("%Y%m%d%H%M%S%f_")
 os.mkdir("resources/"+current_time)
+
+section_id = 1
 
 for url in store_urls:
     
@@ -56,6 +58,7 @@ for url in store_urls:
     result = []
 
     style = xlwt.easyxf('font: bold 1; align: horiz center')
+    
     try:
         if script_tag:
             script_content = script_tag.string
@@ -116,8 +119,6 @@ for url in store_urls:
                 
             with open('resources/'+current_time+"/"+cleaned_store+"/"+store_title+".json", 'w', encoding='utf-8') as file:
                 json.dump(json_data, file, indent=4)
-                
-            section_id = 1
             
             for key, menu in metaData.items():
                 for catalog in menu:
