@@ -179,8 +179,9 @@ for url in store_urls:
                                 image_type = imghdr.what(None, responseImage.content)
                                 if responseImage.status_code == 200:
                                     cleaned_url = clean_filename(item["title"])
-                                    file_url = dir_path+"/images/"+prefix+str(section_id)+'.'+image_type
-                                    with open(file_url, 'wb') as file:
+                                    file_url = prefix+str(section_id)+'.'+image_type
+                                    img_url = dir_path+"/images/"+prefix+str(section_id)+'.'+image_type
+                                    with open(img_url, 'wb') as file:
                                         file.write(responseImage.content)
                             except Exception as e:
                                 print(e)
