@@ -1,11 +1,16 @@
 import requests
 import json
+import xlwt
+from bs4 import BeautifulSoup
+import urllib.parse
 
 root_url = "https://ubereats.com"
 hasMore = True
 url = "https://www.ubereats.com/_p/api/getFeedV1"
 offset = 0
+store_urls = []
 result = []
+section_id = 1
 headers = {
     "accept": "*/*",
     "accept-encoding": "gzip, deflate, br, zstd",
@@ -72,17 +77,94 @@ while(hasMore == True):
         try:
             stores = item["carousel"]["stores"]
             for i in stores:
-                result.append(root_url + i["actionUrl"])        
+                store_urls.append(root_url + i["actionUrl"])        
         except:
             print("No stores")
         try:
             store = item["store"]
-            result.append(root_url + store["actionUrl"])        
+            store_urls.append(root_url + store["actionUrl"])        
         except:
             print("No carousel stores")
         
     hasMore = store_data["data"]["meta"]["hasMore"]
     offset = offset + 300
     
-with open("sc_urls.json", 'w', encoding='utf-8') as file:
-    json.dump(result, file, indent=4)
+for store_url in store_urls:
+    try:
+        store_headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        }
+        response = requests.get(store_url, headers=store_headers)
+
+        # Parse the HTML content of the page
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Find the script tag with the specified type and id
+        script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
+
+        titleData = ["id","Store URL", "Store_name", "Address", "Phone_number", "Rating", "Rating Count"]
+        widths = [30,150,80,80,50,30,30]
+
+        style = xlwt.easyxf('font: bold 1; align: horiz center')
+        
+        if script_tag:
+            script_content = script_tag.string
+            decoded_content = urllib.parse.unquote(script_content)
+            json_string = decoded_content.replace('\\u0022', '"').replace('\\u005C', '\\').replace('\\u2019', "'")
+           
+            json_data = json.loads(json_string)
+            store_title = json_data["queries"][0]["state"]["data"]["title"]
+            
+            store_rating = ""
+            store_review_number = ""
+            address = ""
+            phone_number = ""
+            
+            try:
+                store_rating = json_data["queries"][0]["state"]["data"]["rating"]["ratingValue"]
+                store_review_number = json_data["queries"][0]["state"]["data"]["rating"]["reviewCount"]
+            except:
+                store_rating = ""
+                store_review_number = ""
+            
+            try:
+                address = json_data["queries"][0]["state"]["data"]["location"]["address"]
+            except:
+                address = ""
+                
+            try:
+                phone_number = json_data["queries"][0]["state"]["data"]["phoneNumber"]
+            except:
+                phone_number = ""
+                
+            record = [
+                str(section_id),
+                store_url,
+                store_title,
+                address,
+                phone_number,
+                store_rating,
+                store_review_number
+            ]
+            
+            print(record)
+            result.append(record)
+            section_id = section_id + 1
+            
+    except:
+        print("Fetching data failed")
+        
+workbook = xlwt.Workbook()
+sheet = workbook.add_sheet('Sheet1')
+
+for col_index, value in enumerate(titleData):
+    first_col = sheet.col(col_index)
+    first_col.width = 256 * widths[col_index]  # 20 characters wide
+    sheet.write(0, col_index, value, style)
+    
+for row_index, row in enumerate(result):
+    for col_index, value in enumerate(row):
+        sheet.write(row_index+1, col_index, value)
+
+# Save the workbook
+workbook.save("stores.xls")
