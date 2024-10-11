@@ -160,6 +160,7 @@ for store_url in store_urls:
             print(record)
             result.append(record)
             section_id = section_id + 1
+        time.sleep(1.5)
             
     except:
         print("Fetching data failed")
