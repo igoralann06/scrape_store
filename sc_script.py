@@ -90,12 +90,14 @@ while(hasMore == True):
     hasMore = store_data["data"]["meta"]["hasMore"]
     offset = offset + 300
     
+print(len(store_urls))
+    
 for store_url in store_urls:
     try:
         store_headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
-        response = requests.get(store_url)
+        response = requests.get(store_url, headers=store_headers)
 
         # Parse the HTML content of the page
         soup = BeautifulSoup(response.content, 'html.parser')
