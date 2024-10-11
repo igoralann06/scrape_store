@@ -104,8 +104,8 @@ for store_url in store_urls:
         # Find the script tag with the specified type and id
         script_tag = soup.find('script', type='application/json', id='__REACT_QUERY_STATE__')
 
-        titleData = ["id","Store URL", "Store_name", "Address", "Phone_number", "Rating", "Rating Count"]
-        widths = [30,150,80,80,50,30,30]
+        titleData = ["id","Store URL", "Store_name", "Address", "Phone_number", "Rating", "Rating Count", "Categories"]
+        widths = [30,150,80,80,50,30,30,100]
 
         style = xlwt.easyxf('font: bold 1; align: horiz center')
         
@@ -121,6 +121,7 @@ for store_url in store_urls:
             store_review_number = ""
             address = ""
             phone_number = ""
+            categories = []
             
             try:
                 store_rating = json_data["queries"][0]["state"]["data"]["rating"]["ratingValue"]
@@ -139,6 +140,11 @@ for store_url in store_urls:
             except:
                 phone_number = ""
                 
+            try:
+                categories = json_data["queries"][0]["state"]["data"]["categories"]
+            except:
+                categories = ""
+                
             record = [
                 str(section_id),
                 store_url,
@@ -146,7 +152,8 @@ for store_url in store_urls:
                 address,
                 phone_number,
                 store_rating,
-                store_review_number
+                store_review_number,
+                ",".join(str(category) for category in categories)
             ]
             
             print(record)
