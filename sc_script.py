@@ -66,7 +66,7 @@ while(hasMore == True):
         "serializedRequestContext": "",
         "pageInfo": {
             "offset": offset,
-            "pageSize": 300
+            "pageSize": 80
         },
     }
 
@@ -88,7 +88,7 @@ while(hasMore == True):
             print("No carousel stores")
         
     hasMore = store_data["data"]["meta"]["hasMore"]
-    offset = offset + 300
+    offset = offset + 50
     
 print(len(store_urls))
     
