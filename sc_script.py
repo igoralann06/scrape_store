@@ -4,6 +4,7 @@ import xlwt
 from bs4 import BeautifulSoup
 import urllib.parse
 import time
+import re
 
 root_url = "https://ubereats.com"
 hasMore = True
@@ -143,6 +144,7 @@ for store_url in store_urls:
                 
             try:
                 categories = json_data["queries"][0]["state"]["data"]["categories"]
+                categories = [value for value in categories if not re.fullmatch(r'\$+', value)]
             except:
                 categories = ""
                 
