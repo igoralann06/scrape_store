@@ -32,6 +32,7 @@ if(not os.path.isdir("resources")):
 # for i in range(0,1):
 #     new_url = input("Enter the new url of Uber Eats Store: ")
 #     store_urls.append(new_url)
+print(len(store_urls))
 
 now = datetime.now()
 current_time = now.strftime("%m-%d-%Y-%H-%M-%S")
